@@ -1,4 +1,4 @@
-package com.fansa.admin;
+package com.fansa.admin.user;
 
 import com.fansa.admin.user.RoleRepository;
 import com.fansa.common.entity.Role;

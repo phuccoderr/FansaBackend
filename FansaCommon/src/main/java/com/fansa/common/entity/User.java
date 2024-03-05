@@ -2,13 +2,11 @@ package com.fansa.common.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -19,24 +17,22 @@ import java.util.Set;
 @AllArgsConstructor
 @Setter
 @Getter
+@Builder
 public class User  {
     @Id
     @GeneratedValue (strategy =  GenerationType.IDENTITY)
     private Long id;
 
     @Column(length = 128,nullable = false,unique = true)
-    @NotBlank(message = "Email cannot be null")
-    @Length(max=128, message = "Email must be less than 128 characters")
-    @Email(message = "invalid Email")
     private String email;
 
     @Column(length = 64,nullable = false)
-    @NotEmpty(message = "password cannot be empty")
-    @Length(min=6, message = "password must have 6 characters or more")
     private String password;
 
-    @NotEmpty(message = "name cannot be empty")
     private String name;
+
+    @Column(name = "created_time")
+    private LocalDate createdTime;
 
     private Boolean enabled;
 

@@ -11,6 +11,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.annotation.Rollback;
 
+import java.time.LocalDate;
+
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Rollback(value = false)
@@ -24,10 +26,18 @@ public class UserRepositoryTests {
         user.setName("Phuc");
         user.setPassword(passwordEncoder.encode("0123456789"));
         user.setEmail("admin@gmail.com");
+        user.setCreatedTime(LocalDate.now());
         user.setEnabled(true);
 
-        Role admin = roleRepo.findByName("ADMIN");
-        user.addRole(admin);
+
+        if (roleRepo.findByName("ADMIN") == null) {
+            Role admin = new Role();
+            admin.setName("ADMIN");
+
+            Role saved = roleRepo.save(admin);
+            user.addRole(admin);
+        }
+
 
         userRepo.save(user);
         System.out.println(user);

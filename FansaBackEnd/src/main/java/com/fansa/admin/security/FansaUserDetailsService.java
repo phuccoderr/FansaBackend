@@ -3,8 +3,8 @@ package com.fansa.admin.security;
 import com.fansa.admin.user.UserNotFoundException;
 import com.fansa.admin.user.UserRepository;
 import com.fansa.admin.user.UserSpecifications;
+import com.fansa.admin.user.request.UserDTORequest;
 import com.fansa.common.entity.User;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,8 +18,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -37,41 +35,51 @@ public class FansaUserDetailsService implements UserDetailsService {
 
 
 
-    public User add(User user) throws UserNotFoundException {
-        User userInDB = repo.findByEmail(user.getEmail());
+    public User add(UserDTORequest userDTORequest) throws UserNotFoundException {
+        User userInDB = repo.findByEmail(userDTORequest.getEmail());
 
         if (userInDB != null ) {
             throw new UserNotFoundException("Email has been duplicated");
         }
 
-        String password = user.getPassword();
+        String password = userDTORequest.getPassword();
         String encodePassword = encoder.encode(password);
+        userInDB = User.builder()
+                .name(userDTORequest.getName())
+                .email(userDTORequest.getEmail())
+                .password(encodePassword)
+                .enabled(userDTORequest.getEnabled())
+                .createdTime(userDTORequest.getCreatedTime())
+                .roles(userDTORequest.getRoles()).build();
 
-        user.setPassword(encodePassword);
-
-        repo.save(user);
-        return user;
+        return repo.save(userInDB);
     }
 
     public User getUserById(Long id) throws UserNotFoundException {
         return repo.findById(id).orElseThrow(() -> new UserNotFoundException("No User found with the given id: " + id)) ;
     }
 
-    public User update(User user) throws UserNotFoundException {
-        Optional<User> optionalUser = repo.findById(user.getId());
-        if (!optionalUser.isPresent()) {
-            throw new UserNotFoundException("No User found with the given id: " + user.getId());
+    public User update(UserDTORequest userDTORequest, Long userId) throws UserNotFoundException {
+        Long countById = repo.countById(userId);
+        if (countById == null || countById == 0) {
+            throw new UserNotFoundException("No User found with the given id: " + userId);
         }
-        String password = user.getPassword();
-        String encodePassword = encoder.encode(password);
+        User userInDB = repo.findById(userId).get();
+        if (userDTORequest.getPassword() != userInDB.getPassword()) {
+            String password = userDTORequest.getPassword();
+            String encodePassword = encoder.encode(password);
+            userInDB.setPassword(encodePassword);
+        } else {
+            userInDB = User.builder()
+                    .name(userDTORequest.getName())
+                    .email(userDTORequest.getEmail())
+                    .password(userInDB.getPassword())
+                    .enabled(userDTORequest.getEnabled())
+                    .createdTime(userDTORequest.getCreatedTime())
+                    .roles(userDTORequest.getRoles()).build();
+        }
 
-        optionalUser.get().setName(user.getName());
-        optionalUser.get().setEmail(user.getEmail());
-        optionalUser.get().setPassword(encodePassword);
-        optionalUser.get().setEnabled(user.getEnabled());
-        optionalUser.get().setRoles(user.getRoles());
-        User saved = optionalUser.get();
-        return saved;
+        return userInDB;
     }
 
     public void deleted(Long id) throws UserNotFoundException {

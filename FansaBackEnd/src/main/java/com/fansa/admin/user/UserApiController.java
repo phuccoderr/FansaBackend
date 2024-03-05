@@ -3,8 +3,9 @@ package com.fansa.admin.user;
 import com.fansa.admin.user.request.LoginRequest;
 import com.fansa.admin.security.FansaUserDetailsService;
 import com.fansa.admin.security.jwt.JwtService;
-import com.fansa.admin.user.request.PaginationResponse;
-import com.fansa.admin.user.request.UserDTO;
+import com.fansa.admin.PaginationResponse;
+import com.fansa.admin.user.request.UserDTORequest;
+import com.fansa.admin.user.request.UserDTOResponse;
 import com.fansa.common.entity.Role;
 import com.fansa.common.entity.User;
 import jakarta.validation.Valid;
@@ -19,7 +20,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -80,7 +80,7 @@ public class UserApiController {
             return ResponseEntity.noContent().build();
         }
 
-        List<UserDTO> userDTOS = listEntityToListDTO(listUsers);
+        List<UserDTOResponse> userDTOResponses = listEntityToListDTO(listUsers);
 
         long startCount = (pageNum - 1) * fansaUserDetailsService.USERS_PER_PAGE + 1;
         long endCount = startCount + fansaUserDetailsService.USERS_PER_PAGE - 1;
@@ -95,7 +95,7 @@ public class UserApiController {
                 .sortField(sortField)
                 .sortDir(sortDir)
                 .keyword(keyword)
-                .results(userDTOS).build();
+                .results(userDTOResponses).build();
 
 
         return ResponseEntity.ok(resultResponse);
@@ -106,7 +106,7 @@ public class UserApiController {
     public ResponseEntity<?> getUser(@PathVariable("id") @Positive(message = "user id must be greater than 0") Long userId) {
         try {
             User existingUser = fansaUserDetailsService.getUserById(userId);
-            UserDTO entityDTO = entityToDTO(existingUser);
+            UserDTOResponse entityDTO = entityToDTO(existingUser);
             return new ResponseEntity<>(entityDTO,HttpStatus.OK);
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -115,9 +115,9 @@ public class UserApiController {
 
     @PostMapping("/users")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<?> createUser(@RequestBody @Valid User user) {
+    public ResponseEntity<?> createUser(@RequestBody @Valid UserDTORequest userDTORequest) {
         try {
-            User saved = fansaUserDetailsService.add(user);
+            User saved = fansaUserDetailsService.add(userDTORequest);
             URI location = ServletUriComponentsBuilder
                     .fromCurrentRequest()
                     .path("/{id}")
@@ -130,12 +130,12 @@ public class UserApiController {
 
     }
 
-    @PutMapping("/users")
+    @PutMapping("/users/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
-    public ResponseEntity<?> updateUser(@RequestBody @Valid User user) {
+    public ResponseEntity<?> updateUser(@RequestBody @Valid UserDTORequest userDTORequest, @PathVariable("id") Long userId) {
         try {
-            User updateUser = fansaUserDetailsService.update(user);
-            UserDTO entityDTO = entityToDTO(updateUser);
+            User updateUser = fansaUserDetailsService.update(userDTORequest,userId);
+            UserDTOResponse entityDTO = entityToDTO(updateUser);
             return ResponseEntity.ok(entityDTO);
         } catch (UserNotFoundException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
@@ -153,27 +153,22 @@ public class UserApiController {
         }
     }
 
-    public List<UserDTO> listEntityToListDTO(List<User> users) {
-        List<UserDTO> userDTO = new ArrayList<>();
+    private List<UserDTOResponse> listEntityToListDTO(List<User> users) {
+        List<UserDTOResponse> userDTOResponse = new ArrayList<>();
         users.forEach(
                 user -> {
-                    userDTO.add(entityToDTO(user));
+                    userDTOResponse.add(entityToDTO(user));
                 }
         );
-        return userDTO;
+        return userDTOResponse;
     }
 
-    public UserDTO entityToDTO(User user) {
-        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
-        List<String> roleNames = new ArrayList<>();
+    private UserDTOResponse entityToDTO(User user) {
+        UserDTOResponse userDTOResponse = modelMapper.map(user, UserDTOResponse.class);
         Set<Role> roles = user.getRoles();
-        roles.forEach(
-                role -> {
-                    roleNames.add(role.getName());
-                }
-        );
 
-        userDTO.setRole(roleNames);
-        return userDTO;
+
+        userDTOResponse.setRoles(roles);
+        return userDTOResponse;
     }
 }

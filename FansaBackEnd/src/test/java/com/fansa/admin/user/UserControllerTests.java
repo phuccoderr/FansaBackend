@@ -5,7 +5,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 
 import com.fansa.admin.security.FansaUserDetailsService;
 import com.fansa.admin.security.jwt.JwtService;
-import com.fansa.admin.user.request.UserDTO;
+import com.fansa.admin.user.request.UserDTORequest;
 import com.fansa.common.entity.Role;
 import com.fansa.common.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -98,7 +98,6 @@ public class UserControllerTests {
         listUser.add(user1);
         listUser.add(user2);
 
-        List<UserDTO> userDTOS = listEntityToListDTO(listUser);
 
         Mockito.when(service.listByUser(1,"name","asc",null)).thenReturn(Mockito.any());
 
@@ -153,13 +152,13 @@ public class UserControllerTests {
     @WithMockUser(username = "staff@gmail.com",password = "0123456789")
     public void testAddShouldReturn400BadRequest() throws Exception {
 
-        User user = new User();
+        UserDTORequest user = new UserDTORequest();
         user.setId(5L);
         user.setEmail("admin@gmail.com");
         user.setPassword("0123456789");
         user.setName(""); // empty name
 
-        Mockito.when(service.add(user)).thenReturn(user);
+        Mockito.when(service.add(user)).thenReturn(Mockito.any());
         String bodyContent = objectMapper.writeValueAsString(user);
         mockMvc.perform(post(END_POINT_PATH + "/users").content(bodyContent)
                 .contentType("application/json").with(csrf()))
@@ -171,13 +170,13 @@ public class UserControllerTests {
     @WithMockUser(username = "admin@gmail.com",password = "0123456789")
     public void testAddShouldReturn201Created() throws Exception {
 
-        User user = new User();
+        UserDTORequest user = new UserDTORequest();
         user.setId(1L);
         user.setEmail("admin@gmail.com");
         user.setPassword("0123456789");
         user.setName("Phuc");
 
-        Mockito.when(service.add(user)).thenReturn(user);
+        Mockito.when(service.add(user)).thenReturn(Mockito.any());
         String bodyContent = objectMapper.writeValueAsString(user);
         mockMvc.perform(post(END_POINT_PATH + "/users").contentType("application/json")
                 .content(bodyContent).with(csrf()))
@@ -189,14 +188,14 @@ public class UserControllerTests {
     @Test
     @WithMockUser(username = "admin@gmail.com",password = "0123456789")
     public void testPutShouldReturn400BadRequest() throws Exception {
-        User user = new User();
+        UserDTORequest user = new UserDTORequest();
         user.setId(5L);
         user.setEmail("admin@gmail.com");
         user.setPassword("0123456789");
         user.setName(""); // empty name
 
 
-        Mockito.when(service.update(user)).thenReturn(user);
+        Mockito.when(service.update(user,5L)).thenReturn(Mockito.any());
 
         String bodyContent = objectMapper.writeValueAsString(user);
 
@@ -209,14 +208,14 @@ public class UserControllerTests {
         @Test
         @WithMockUser(username = "admin@gmail.com",password = "0123456789")
         public void testPutShouldReturn404NotFound() throws Exception {
-            User user = new User();
+            UserDTORequest user = new UserDTORequest();
             user.setId(3L);
             user.setEmail("pp@gmail.com");
             user.setPassword("0123456789");
             user.setName("Phuc");
             user.setEnabled(true);
 
-            Mockito.when(service.update(user)).thenThrow(new UserNotFoundException("No found"));
+            Mockito.when(service.update(user,5L)).thenThrow(new UserNotFoundException("No found"));
 
             String bodyContent = objectMapper.writeValueAsString(user);
 
@@ -229,14 +228,14 @@ public class UserControllerTests {
     @Test
     @WithMockUser(username = "admin@gmail.com",password = "0123456789")
     public void testPutShouldReturn200OK() throws Exception {
-        User user = new User();
+        UserDTORequest user = new UserDTORequest();
         user.setId(3L);
         user.setEmail("ppot@gmail.com");
         user.setPassword("0123456789");
         user.setName("Phuc");
         user.setEnabled(true);
 
-        Mockito.when(service.update(user)).thenReturn(user);
+        Mockito.when(service.update(user,3L)).thenReturn(Mockito.any());
 
         String bodyContent = objectMapper.writeValueAsString(user);
 
@@ -270,27 +269,5 @@ public class UserControllerTests {
                 .andDo(MockMvcResultHandlers.print());
     }
 
-    public List<UserDTO> listEntityToListDTO(List<User> users) {
-        List<UserDTO> userDTO = new ArrayList<>();
-        users.forEach(
-                user -> {
-                    userDTO.add(entityToDTO(user));
-                }
-        );
-        return userDTO;
-    }
 
-    public UserDTO entityToDTO(User user) {
-        UserDTO userDTO = modelMapper.map(user, UserDTO.class);
-        List<String> roleNames = new ArrayList<>();
-        Set<Role> roles = user.getRoles();
-        roles.forEach(
-                role -> {
-                    roleNames.add(role.getName());
-                }
-        );
-
-        userDTO.setRole(roleNames);
-        return userDTO;
-    }
 }

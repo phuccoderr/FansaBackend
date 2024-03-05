@@ -1,4 +1,4 @@
-package com.fansa.admin.user.request;
+package com.fansa.admin;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -21,5 +21,5 @@ public class PaginationResponse {
     private String sortDir;
     private String keyword;
 
-    private List<UserDTO> results;
+    private List<?> results;
 }

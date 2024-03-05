@@ -41,7 +41,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
         error.setTimestamp(new Date());
         error.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
         error.setPath(request.getServletPath());
-        error.addError(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+        error.addError(exception.getMessage());
 
         LOGGER.error(exception.getMessage(),exception);
         return error;

@@ -85,7 +85,7 @@ public class ApplicationSecurityConfig {
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests( authz -> authz
-                        .requestMatchers("/auth/login","/actuator/**").permitAll()
+                        .requestMatchers("/auth/login","/actuator/**","/auth/products").permitAll()
                         .requestMatchers(AUTH_WHITELIST).permitAll()
                         .anyRequest()
                         .authenticated()
