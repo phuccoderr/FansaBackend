@@ -9,6 +9,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.Range;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -19,7 +20,6 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-
 public class UserDTORequest {
     private Long id;
 
@@ -28,18 +28,16 @@ public class UserDTORequest {
     @Email(message = "invalid Email")
     private String email;
 
-    @NotNull(message = "password cannot be empty")
-    @Length(min=6, message = "password must have 6 characters or more")
+    @NotBlank(message = "Password cannot be null")
+    @Length(min = 6, max = 64,message = "Password must be between 6 and 64")
     private String password;
+
+    private String confirmPassword;
 
     @NotEmpty(message = "name cannot be empty")
     private String name;
 
     private Boolean enabled;
-
-    @JsonProperty("created_time")
-    @JsonFormat(pattern = "yyyy-MM-dd",shape = JsonFormat.Shape.STRING)
-    private LocalDate createdTime;
 
     private Set<Role> roles = new HashSet<>();
 }

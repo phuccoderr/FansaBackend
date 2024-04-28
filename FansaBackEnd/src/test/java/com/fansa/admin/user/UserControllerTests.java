@@ -6,6 +6,7 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import com.fansa.admin.security.FansaUserDetailsService;
 import com.fansa.admin.security.jwt.JwtService;
 import com.fansa.admin.user.request.UserDTORequest;
+import com.fansa.admin.user.request.UserDTOUpdateRequest;
 import com.fansa.common.entity.Role;
 import com.fansa.common.entity.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -188,7 +189,7 @@ public class UserControllerTests {
     @Test
     @WithMockUser(username = "admin@gmail.com",password = "0123456789")
     public void testPutShouldReturn400BadRequest() throws Exception {
-        UserDTORequest user = new UserDTORequest();
+        UserDTOUpdateRequest user = new UserDTOUpdateRequest();
         user.setId(5L);
         user.setEmail("admin@gmail.com");
         user.setPassword("0123456789");
@@ -208,7 +209,7 @@ public class UserControllerTests {
         @Test
         @WithMockUser(username = "admin@gmail.com",password = "0123456789")
         public void testPutShouldReturn404NotFound() throws Exception {
-            UserDTORequest user = new UserDTORequest();
+            UserDTOUpdateRequest user = new UserDTOUpdateRequest();
             user.setId(3L);
             user.setEmail("pp@gmail.com");
             user.setPassword("0123456789");
@@ -228,7 +229,7 @@ public class UserControllerTests {
     @Test
     @WithMockUser(username = "admin@gmail.com",password = "0123456789")
     public void testPutShouldReturn200OK() throws Exception {
-        UserDTORequest user = new UserDTORequest();
+        UserDTOUpdateRequest user = new UserDTOUpdateRequest();
         user.setId(3L);
         user.setEmail("ppot@gmail.com");
         user.setPassword("0123456789");

@@ -6,6 +6,7 @@
       <list>
         <option value="$PROJECT_DIR$/FansaCommon/pom.xml" />
         <option value="$PROJECT_DIR$/FansaBackEnd/pom.xml" />
+        <option value="$PROJECT_DIR$/FansaFrontEnd/pom.xml" />
       </list>
     </option>
     <option name="workspaceImportForciblyTurnedOn" value="true" />

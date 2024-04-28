@@ -14,7 +14,7 @@ import org.hibernate.validator.constraints.Length;
 public class LoginRequest {
     @NotBlank(message = "Email cannot be null")
     @Length(max=128, message = "Email must be less than 128 characters")
-    @Email(message = "invalid Email")
+    @Email(message = "Invalid Email")
     private String email;
 
     @NotEmpty(message = "password cannot be empty")

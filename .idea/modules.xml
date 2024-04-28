@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/FansaCommon/FansaCommon.iml" filepath="$PROJECT_DIR$/FansaCommon/FansaCommon.iml" />
+      <module fileurl="file://$PROJECT_DIR$/FansaFrontEnd/FansaFrontEnd.iml" filepath="$PROJECT_DIR$/FansaFrontEnd/FansaFrontEnd.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/fansa.iml" filepath="$PROJECT_DIR$/.idea/fansa.iml" />
     </modules>
   </component>

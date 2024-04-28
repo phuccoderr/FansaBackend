@@ -9,7 +9,6 @@ import org.springframework.test.annotation.Rollback;
 
 import java.text.Normalizer;
 import java.time.LocalDate;
-import java.util.Date;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -31,6 +30,14 @@ public class ProductRepositoryTests {
                 .price(25.2f)
                 .sale(15.5f)
                 .mainImage("main_image").build();
+
+
+
+        String name = "the loai";
+        String value = "truyen hai";
+        product.addDetail(name,value);
+
+        product.addImage("sub Image");
 
         Product save = repo.save(product);
         System.out.println(save.toString());

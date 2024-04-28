@@ -1,5 +1,7 @@
 package com.fansa.admin.security;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
 import com.fansa.admin.security.jwt.JwtAuthEntryPoint;
 import com.fansa.admin.security.jwt.JwtFilter;
 import io.swagger.v3.oas.models.Components;
@@ -28,10 +30,17 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class ApplicationSecurityConfig {
+
+    private final String CLOUD_NAME = "dp4tp9gwa";
+    private final String API_KEY = "774542943245931";
+    private final String API_SECRET = "mbwq5AMRewXo8Fo8ENBXrJRbjFE";
 
     @Autowired
     @Qualifier("jwtAuthenticationEntryPoint")
@@ -85,7 +94,7 @@ public class ApplicationSecurityConfig {
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests( authz -> authz
-                        .requestMatchers("/auth/login","/actuator/**","/auth/products").permitAll()
+                        .requestMatchers("/auth/login","/actuator/**","/auth/users/**").permitAll()
                         .requestMatchers(AUTH_WHITELIST).permitAll()
                         .anyRequest()
                         .authenticated()
@@ -110,5 +119,14 @@ public class ApplicationSecurityConfig {
                 .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
                 .components(new Components().addSecuritySchemes
                         ("Bearer Authentication", createAPIKeyScheme()));
+    }
+
+    @Bean
+    public Cloudinary cloudinary() {
+        Cloudinary cloudinary = new Cloudinary(ObjectUtils.asMap(
+                "cloud_name", "dp4tp9gwa",
+                "api_key", "774542943245931",
+                "api_secret", "mbwq5AMRewXo8Fo8ENBXrJRbjFE"));
+        return  cloudinary;
     }
 }

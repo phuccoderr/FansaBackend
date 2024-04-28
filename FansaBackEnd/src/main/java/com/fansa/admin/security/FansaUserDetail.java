@@ -58,4 +58,16 @@ public class FansaUserDetail implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    public Long getId() {
+        return user.getId();
+    }
+
+    public String getName() {
+        return user.getName();
+    }
+
+    public Set<Role> getRoles() {
+        return user.getRoles();
+    }
 }

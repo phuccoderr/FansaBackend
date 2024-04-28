@@ -7,6 +7,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
+import org.apache.coyote.BadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -47,6 +48,21 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
         return error;
     }
 
+    @ExceptionHandler(BadRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    public ErrorDTO handleBadRequestException(HttpServletRequest request,Exception exception) {
+        ErrorDTO error = new ErrorDTO();
+
+        error.setTimestamp(new Date());
+        error.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        error.setPath(request.getServletPath());
+        error.addError(exception.getMessage());
+
+        LOGGER.error(exception.getMessage(),exception);
+        return error;
+    }
+
 
 
     @ExceptionHandler({ConstraintViolationException.class, DataIntegrityViolationException.class})
@@ -65,10 +81,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
                         error.addError(constraint.getPropertyPath() + ": " + constraint.getMessage());
                     }
             );
-        } else if (exception instanceof DataIntegrityViolationException) {
+        }
+        if (exception instanceof DataIntegrityViolationException) {
             error.addError(exception.getMessage());
         }
-
         // Logging lỗi
         LOGGER.error(exception.getMessage(), exception);
 

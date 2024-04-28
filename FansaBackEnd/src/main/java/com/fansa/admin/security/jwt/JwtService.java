@@ -9,17 +9,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 
 @Component
 public class JwtService {
     private static final String SECRET = "!@#$SAMKASMDBNBHasjhdbASKJDBAKWJHDJKWAqweqweqwaxzdz";
     public String generateToken(String email) {
-        Map<String, Objects> claims = new HashMap<>();
+        Map<String, Object> claims = new HashMap<>();
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(email)
@@ -28,13 +25,18 @@ public class JwtService {
                 .signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
     }
 
+    //Het han
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration); //(Claims) -> Claims.getExpiration()
     }
+
+    //Trich xuat Claim
     private <T> T extractClaim(String token, Function<Claims,T> claimResolver) {
         final Claims claims = extractAllClaims(token);
         return claimResolver.apply(claims);
     }
+
+    //Trich xuat tat ca Claim
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .setSigningKey(getSignKey())

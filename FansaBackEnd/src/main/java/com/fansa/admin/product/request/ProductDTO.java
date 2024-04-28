@@ -1,7 +1,9 @@
 package com.fansa.admin.product.request;
 
-import com.fansa.common.entity.ProductDetails;
+import com.fansa.common.entity.ProductDetail;
+import com.fansa.common.entity.ProductImage;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -9,7 +11,7 @@ import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import java.time.LocalDate;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,7 +21,6 @@ import java.util.Set;
 @Setter
 @Getter
 public class ProductDTO {
-
 
     private Long id;
     @NotBlank(message = "name invalid")
@@ -53,8 +54,17 @@ public class ProductDTO {
 
     private float sale;
 
-    @JsonProperty("main_image")
+    @JsonIgnore
     private String mainImage;
 
-    Set<ProductDetails> details = new HashSet<>();
+    private Long category;
+
+    private Set<ProductDetail> details = new HashSet<>();
+    @JsonIgnore
+    private ArrayList<String> imageDTOs = new ArrayList<>();
+
+    public void addImage(String image) {
+        this.imageDTOs.add(image);
+    }
+
 }

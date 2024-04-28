@@ -1,9 +1,7 @@
 package com.fansa.common.entity;
 
-import com.fansa.common.IdBasedEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,7 +9,10 @@ import lombok.Setter;
 @Table(name = "roles")
 @Getter
 @Setter
-public class Role extends IdBasedEntity {
+public class Role {
+    @Id
+    @GeneratedValue(strategy =  GenerationType.IDENTITY)
+    private Long id;
     @Column(length = 128,nullable = false)
     private String name;
 

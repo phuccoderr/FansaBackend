@@ -53,7 +53,7 @@ public class ProductControllerTests {
     @Test
     @WithMockUser(username = "admin@gmail.com",password = "0123456789")
     public void testGetShouldReturn204NoContent() throws Exception {
-        Mockito.when(service.listByPage(1,"asc","name",null)).thenReturn(Mockito.any());
+//        Mockito.when(service.listByPage(1,"asc","name",null)).thenReturn(Mockito.any());
 
         mockMvc.perform(get(END_POINT_PATH))
                 .andExpect(status().isNoContent())

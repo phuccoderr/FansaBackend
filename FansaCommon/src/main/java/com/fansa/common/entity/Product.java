@@ -1,7 +1,5 @@
 package com.fansa.common.entity;
 
-import com.fansa.common.IdBasedEntity;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,10 +14,10 @@ import java.util.*;
 @Builder
 @Table(name = "products")
 public class Product {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true,length = 256,nullable = false)
     private String name;
 
@@ -49,21 +47,43 @@ public class Product {
     private float sale;
 
     @Column(name = "main_image",nullable = false)
-
     private String mainImage;
 
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
+
     @OneToMany(mappedBy = "product",cascade = CascadeType.ALL,orphanRemoval = true)
-    Set<ProductDetails> details = new HashSet<>();
+    private Set<ProductDetail> productDetails = new HashSet<>();
+
+    @OneToMany(mappedBy = "product",cascade = CascadeType.ALL,orphanRemoval = true)
+    private Set<ProductImage> productImages = new HashSet<>();
+
+
+    public void addDetail(String detailName,String detailValue) {
+        if (productDetails == null) {
+            productDetails = new HashSet<>();
+        }
+        this.productDetails.add(new ProductDetail(detailName,detailValue,this));
+    }
+
+    public void addImage(String extraImage) {
+        if (productImages == null) {
+            productImages = new HashSet<>();
+        }
+        this.productImages.add(new ProductImage(extraImage,this));
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Product product)) return false;
-        return Objects.equals(getId(), product.getId()) && Objects.equals(getName(), product.getName()) && Objects.equals(getAlias(), product.getAlias());
+        if (o == null || getClass() != o.getClass()) return false;
+        Product product = (Product) o;
+        return Objects.equals(id, product.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getName(), getAlias());
+        return Objects.hash(id);
     }
 }

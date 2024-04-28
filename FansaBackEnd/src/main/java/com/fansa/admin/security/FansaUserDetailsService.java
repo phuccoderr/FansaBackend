@@ -1,10 +1,14 @@
 package com.fansa.admin.security;
 
+import com.fansa.admin.user.RoleRepository;
 import com.fansa.admin.user.UserNotFoundException;
 import com.fansa.admin.user.UserRepository;
 import com.fansa.admin.user.UserSpecifications;
 import com.fansa.admin.user.request.UserDTORequest;
+import com.fansa.admin.user.request.UserDTOUpdateRequest;
+import com.fansa.common.entity.Role;
 import com.fansa.common.entity.User;
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,12 +22,16 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class FansaUserDetailsService implements UserDetailsService {
-    public static final int USERS_PER_PAGE = 12;
+    public static final int USERS_PER_PAGE = 2;
     @Autowired private UserRepository repo;
+    @Autowired private RoleRepository roleRepo;
     private PasswordEncoder encoder = new BCryptPasswordEncoder();
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -35,11 +43,11 @@ public class FansaUserDetailsService implements UserDetailsService {
 
 
 
-    public User add(UserDTORequest userDTORequest) throws UserNotFoundException {
+    public User add(UserDTORequest userDTORequest) throws BadRequestException {
         User userInDB = repo.findByEmail(userDTORequest.getEmail());
 
         if (userInDB != null ) {
-            throw new UserNotFoundException("Email has been duplicated");
+            throw new BadRequestException("Email has been duplicated");
         }
 
         String password = userDTORequest.getPassword();
@@ -49,7 +57,7 @@ public class FansaUserDetailsService implements UserDetailsService {
                 .email(userDTORequest.getEmail())
                 .password(encodePassword)
                 .enabled(userDTORequest.getEnabled())
-                .createdTime(userDTORequest.getCreatedTime())
+                .createdTime(LocalDate.now())
                 .roles(userDTORequest.getRoles()).build();
 
         return repo.save(userInDB);
@@ -59,27 +67,29 @@ public class FansaUserDetailsService implements UserDetailsService {
         return repo.findById(id).orElseThrow(() -> new UserNotFoundException("No User found with the given id: " + id)) ;
     }
 
-    public User update(UserDTORequest userDTORequest, Long userId) throws UserNotFoundException {
+    public User update(UserDTOUpdateRequest userDTORequest, Long userId) throws UserNotFoundException {
         Long countById = repo.countById(userId);
         if (countById == null || countById == 0) {
             throw new UserNotFoundException("No User found with the given id: " + userId);
         }
         User userInDB = repo.findById(userId).get();
-        if (userDTORequest.getPassword() != userInDB.getPassword()) {
+        String passwordUserInDB = userInDB.getPassword();
+        if (userDTORequest.getPassword() != userInDB.getPassword() && userDTORequest.getPassword() != null) {
             String password = userDTORequest.getPassword();
-            String encodePassword = encoder.encode(password);
-            userInDB.setPassword(encodePassword);
-        } else {
-            userInDB = User.builder()
-                    .name(userDTORequest.getName())
-                    .email(userDTORequest.getEmail())
-                    .password(userInDB.getPassword())
-                    .enabled(userDTORequest.getEnabled())
-                    .createdTime(userDTORequest.getCreatedTime())
-                    .roles(userDTORequest.getRoles()).build();
+            passwordUserInDB = encoder.encode(password);
         }
 
-        return userInDB;
+        userInDB = User.builder()
+                .id(userId)
+                .name(userDTORequest.getName())
+                .email(userDTORequest.getEmail())
+                .password(passwordUserInDB)
+                .enabled(userDTORequest.getEnabled())
+                .createdTime(userInDB.getCreatedTime())
+                .roles(userDTORequest.getRoles()).build();
+
+
+        return repo.save(userInDB);
     }
 
     public void deleted(Long id) throws UserNotFoundException {
@@ -104,5 +114,13 @@ public class FansaUserDetailsService implements UserDetailsService {
         }
         return repo.findAll(spec,pageable);
 
+    }
+
+    public List<User> listAllUser() {
+        return repo.findAll();
+    }
+
+    public List<Role> getAllRoles() {
+        return roleRepo.findAll();
     }
 }
