@@ -126,7 +126,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
 
 
     @ExceptionHandler(AccessDeniedException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ResponseBody
     public ErrorDTO handleAccessDeniedException(HttpServletRequest request,Exception ex) {
 
@@ -134,7 +134,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler{
 
         if (ex instanceof AccessDeniedException) {
             error.setTimestamp(new Date());
-            error.setStatus(HttpStatus.FORBIDDEN.value());
+            error.setStatus(HttpStatus.UNAUTHORIZED.value());
             error.setPath(request.getServletPath());
             error.addError("Authentication accessdenied");
         }

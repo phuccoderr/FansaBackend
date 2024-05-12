@@ -2,8 +2,14 @@ package com.fansa.security;
 
 import com.fansa.security.jwt.JwtAuthEntryPoint;
 import com.fansa.security.jwt.JwtFilter;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -20,6 +26,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -36,6 +47,12 @@ public class ApplicationSecurityConfig {
             "/v3/api-docs/**",
             "/swagger-ui/**"
     };
+
+    private SecurityScheme createAPIKeyScheme() {
+        return new SecurityScheme().type(SecurityScheme.Type.HTTP)
+                .bearerFormat("JWT")
+                .scheme("bearer");
+    }
 
     @Bean
     public UserDetailsService userDetailsService() {
@@ -64,9 +81,14 @@ public class ApplicationSecurityConfig {
     @Bean
     public SecurityFilterChain filterChain (HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable())
+                .cors(c -> corsConfigurationSource())
                 .exceptionHandling( ex -> ex.authenticationEntryPoint(authEntryPoint))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login","/refreshToken","/signout", "/products").permitAll()
+                        .requestMatchers("/signin","/signin/google","/signin/facebook",
+                                "/refreshtoken","/signout",
+                                "/products","/products/**",
+                                "/categories",
+                                "/register").permitAll()
                         .requestMatchers(AUTH_WHITELIST).permitAll()
                         .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider())
@@ -74,5 +96,24 @@ public class ApplicationSecurityConfig {
         return http.build();
     }
 
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration cc = new CorsConfiguration();
+        cc.setAllowCredentials(true);
+        cc.setAllowedOrigins(List.of("http://localhost:3001"));
+        cc.setAllowedHeaders(List.of("*"));
+        cc.setAllowedMethods(List.of("*"));
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", cc);
+        return source;
+    }
 
+    @Bean
+    public OpenAPI openAPI() {
+        Info info = new Info().description("Full stack ReactJS with Spring boot").title("Fansa API");
+        return new OpenAPI().info(info)
+                .addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
+                .components(new Components().addSecuritySchemes
+                        ("Bearer Authentication", createAPIKeyScheme()));
+    }
 }

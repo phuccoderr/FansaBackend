@@ -18,9 +18,12 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String name;
+    private String photo;
+
     @Column(nullable = false,length = 45)
     private String email;
-    @Column(nullable = false,length = 64)
+    @Column(length = 64)
     private String password;
 
     @Column(name = "created_time",nullable = false)

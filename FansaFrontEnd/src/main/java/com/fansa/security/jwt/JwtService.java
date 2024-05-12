@@ -25,7 +25,7 @@ public class JwtService {
                 .claims(claims)
                 .subject(email)
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis()+1000*60*2)) //thoi han 30 phut
+                .expiration(new Date(System.currentTimeMillis()+1000* 10 * 5)) //thoi han 5 phut
                 .signWith(getSignKey(), Jwts.SIG.HS256).compact();
     }
 

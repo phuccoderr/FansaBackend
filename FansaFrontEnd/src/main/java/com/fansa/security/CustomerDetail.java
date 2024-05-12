@@ -52,4 +52,12 @@ public class CustomerDetail implements UserDetails {
     public Long getId() {
         return customer.getId();
     }
+
+    public String getName() {
+        return customer.getName();
+    };
+
+    public String getPhoto() {
+        return customer.getPhoto();
+    }
 }

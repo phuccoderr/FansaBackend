@@ -38,14 +38,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InsufficientAuthenticationException.class)
-    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ResponseBody
     public ErrorDTO handleExpiredOrSignatureException(HttpServletRequest request,Exception ex) {
 
         ErrorDTO error = new ErrorDTO();
 
         error.setTimestamp(new Date());
-        error.setStatus(HttpStatus.FORBIDDEN.value());
+        error.setStatus(HttpStatus.UNAUTHORIZED.value());
         error.setPath(request.getServletPath());
         error.addError("Authentication JWT Expired Or Signature");
 

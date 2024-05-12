@@ -2,6 +2,8 @@ package com.fansa.customer;
 
 import com.fansa.common.entity.Customer;
 import com.fansa.common.entity.RefreshToken;
+import com.fansa.controller.customer.CustomerRepository;
+import com.fansa.controller.customer.RefreshTokenRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -9,7 +11,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.annotation.Rollback;
 
 import java.time.Instant;
-import java.util.Optional;
 import java.util.UUID;
 
 @DataJpaTest

@@ -1,4 +1,4 @@
-package com.fansa.customer;
+package com.fansa.controller.customer;
 
 import com.fansa.common.entity.Customer;
 import org.springframework.beans.factory.annotation.Autowired;

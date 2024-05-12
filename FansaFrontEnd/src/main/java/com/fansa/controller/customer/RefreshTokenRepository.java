@@ -1,4 +1,4 @@
-package com.fansa.customer;
+package com.fansa.controller.customer;
 
 import com.fansa.common.entity.RefreshToken;
 import jakarta.transaction.Transactional;

@@ -1,9 +1,8 @@
 package com.fansa.security.jwt;
 
 import com.fansa.common.entity.RefreshToken;
-import com.fansa.customer.CustomerRepository;
-import com.fansa.customer.RefreshTokenRepository;
-import jakarta.transaction.Transactional;
+import com.fansa.controller.customer.CustomerRepository;
+import com.fansa.controller.customer.RefreshTokenRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +23,7 @@ public class RefreshTokenService {
     }
 
     public RefreshToken createRefreshToken(Long customerId) {
+        refreshTokenRepository.deleteByCustomer(customerId);
         RefreshToken refreshToken = RefreshToken.builder()
                 .customer(customerRepository.findById(customerId).get())
                 .expiryDate(Instant.now().plusMillis(1000L * 60 * 30)) // 30 phut
@@ -34,7 +34,7 @@ public class RefreshTokenService {
     }
 
     public RefreshToken verifyExpiration(RefreshToken token) {
-        if (token.getExpiryDate().compareTo(Instant.now()) < 0) {
+        if (token.getExpiryDate().isBefore(Instant.now())) {
             refreshTokenRepository.delete(token);
             throw new TokenRefreshException(token.getToken(), "Refresh token was expired. Please make a new signin request");
         }

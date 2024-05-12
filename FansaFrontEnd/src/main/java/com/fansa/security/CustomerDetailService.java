@@ -1,7 +1,7 @@
 package com.fansa.security;
 
 import com.fansa.common.entity.Customer;
-import com.fansa.customer.CustomerRepository;
+import com.fansa.controller.customer.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
