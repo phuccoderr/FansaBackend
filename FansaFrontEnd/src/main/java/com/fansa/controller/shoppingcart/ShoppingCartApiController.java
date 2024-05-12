@@ -16,11 +16,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/auth/cart")
-public class ShoppingCartController {
+public class ShoppingCartApiController {
     @Autowired
     private ShoppingCartService cartService;
-    @Autowired
-    private CustomerService customerService;
 
     @PostMapping("/add/{productId}/{quantity}")
     public ResponseEntity<?> addProductToCart(@PathVariable(name = "productId") Long productId,

@@ -9,6 +9,7 @@ import com.fansa.controller.product.ProductNotFoundException;
 import com.fansa.controller.product.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -50,6 +51,7 @@ public class ShoppingCartService {
         return cartRepo.findByCustomer(customer);
     }
 
+    @Transactional
     public void removeCart(Long customerId,Long productId) throws ProductNotFoundException, CustomerNotFoundException {
         Product product = productRepo.findById(productId).orElseThrow(() ->
                 new ProductNotFoundException("product not found!"));
