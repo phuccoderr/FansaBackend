@@ -18,6 +18,7 @@
       <module name="FansaBackEnd" options="-parameters" />
       <module name="FansaCommon" options="-parameters" />
       <module name="FansaFrontEnd" options="-parameters" />
+      <module name="FansaWebParent" options="" />
     </option>
   </component>
 </project>

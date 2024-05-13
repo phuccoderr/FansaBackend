@@ -7,6 +7,9 @@
         <option value="$PROJECT_DIR$/FansaCommon/pom.xml" />
         <option value="$PROJECT_DIR$/FansaBackEnd/pom.xml" />
         <option value="$PROJECT_DIR$/FansaFrontEnd/pom.xml" />
+        <option value="$PROJECT_DIR$/ShopmeWebParent/pom.xml" />
+        <option value="$PROJECT_DIR$/FansaWebParent/FansaBackEnd/pom.xml" />
+        <option value="$PROJECT_DIR$/FansaWebParent/pom.xml" />
       </list>
     </option>
     <option name="workspaceImportForciblyTurnedOn" value="true" />

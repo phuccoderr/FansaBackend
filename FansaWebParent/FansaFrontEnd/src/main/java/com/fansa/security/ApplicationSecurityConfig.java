@@ -88,6 +88,7 @@ public class ApplicationSecurityConfig {
                                 "/refreshtoken","/signout",
                                 "/products","/products/**",
                                 "/categories",
+                                "/auth/order/payment/create",
                                 "/register").permitAll()
                         .requestMatchers(AUTH_WHITELIST).permitAll()
                         .anyRequest().authenticated())
