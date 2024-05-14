@@ -130,7 +130,7 @@
         </dependency>
 
         <dependency>
-            <groupId>com.fansa</groupId>
+            <groupId>org.fansa</groupId>
             <artifactId>FansaCommon</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
