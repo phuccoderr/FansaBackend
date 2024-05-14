@@ -1,0 +1,4 @@
+# Cloud
+- Cloudinary
+# Database
+- Mysql
